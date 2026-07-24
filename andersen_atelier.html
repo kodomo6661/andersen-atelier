@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>こども美術館 アトリエ受付状況</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #e8f4fd;
+    --green: #4caf76;
+    --green-light: #d4f0e0;
+    --red: #f05a5a;
+    --red-light: #fde8e8;
+    --yellow: #f5c842;
+    --yellow-light: #fef9e0;
+    --gray: #b0b8c8;
+    --gray-light: #f0f2f5;
+    --ink: #2c3550;
+    --white: #ffffff;
+    --radius: 20px;
+    --shadow: 0 4px 20px rgba(44,53,80,0.10);
+    --shadow-lg: 0 8px 32px rgba(44,53,80,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    background: var(--sky);
+    min-height: 100vh;
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 10% 20%, rgba(255,220,100,0.18) 0%, transparent 40%),
+      radial-gradient(circle at 85% 75%, rgba(76,175,118,0.15) 0%, transparent 40%),
+      radial-gradient(circle at 50% 95%, rgba(100,160,240,0.12) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .container { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 16px 60px; }
+  header { text-align: center; padding: 36px 20px 20px; }
+  .header-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--white); border-radius: 100px; padding: 6px 18px;
+    font-size: 12px; font-weight: 700; color: var(--green);
+    box-shadow: var(--shadow); margin-bottom: 14px; letter-spacing: 0.08em;
+  }
+  .pulse-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--green);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.7); }
+  }
+  .header-title { font-size: clamp(22px, 5vw, 34px); font-weight: 900; color: var(--ink); line-height: 1.2; margin-bottom: 6px; }
+  .header-sub { font-size: 13px; color: #6b7a9a; font-weight: 500; }
+  .decorative-line { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 18px auto 0; }
+  .decorative-line span { width: 6px; height: 6px; border-radius: 50%; background: var(--yellow); }
+  .decorative-line span:nth-child(2) { background: var(--green); }
+  .decorative-line span:nth-child(4) { background: var(--red); width:8px; height:8px; }
+  .decorative-line span:nth-child(6) { background: #64a0f0; }
+  .last-updated { text-align: center; font-size: 12px; color: #8a97b5; margin: 6px 0 24px; font-weight: 500; }
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 28px;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 6px; background: var(--white);
+    border-radius: 100px; padding: 5px 14px; font-size: 11.5px; font-weight: 700;
+    box-shadow: 0 2px 8px rgba(44,53,80,0.07);
+  }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 40px; }
+  .card {
+    background: var(--white); border-radius: var(--radius); padding: 22px 18px 18px;
+    box-shadow: var(--shadow); transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative; overflow: hidden; animation: cardIn 0.4s ease both;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+  .card-accent { position: absolute; top: 0; left: 0; right: 0; height: 5px; border-radius: var(--radius) var(--radius) 0 0; }
+  .card-number { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: #aab0c8; margin-bottom: 2px; }
+  .card-name { font-size: 15px; font-weight: 900; color: var(--ink); margin-bottom: 14px; line-height: 1.3; }
+  .status-badge { display: inline-flex; align-items: center; border-radius: 100px; padding: 5px 13px; font-size: 12px; font-weight: 700; }
+  .status-open { background: var(--green-light); color: #2e7d52; }
+  .status-full { background: var(--red-light); color: #c0392b; }
+  .status-prep { background: var(--yellow-light); color: #9a7a00; }
+  .status-done { background: var(--gray-light); color: #7a8299; }
+  .card-accent-open { background: linear-gradient(90deg, #4caf76, #6dd49c); }
+  .card-accent-full { background: linear-gradient(90deg, #f05a5a, #f58b8b); }
+  .card-accent-prep { background: linear-gradient(90deg, #f5c842, #f9da7a); }
+  .card-accent-done { background: linear-gradient(90deg, #b0b8c8, #d0d5e0); }
+  .footer-note { text-align: center; font-size: 11px; color: #aab0c8; margin-top: 10px; line-height: 1.7; }
+  @media (max-width: 480px) {
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .card { padding: 18px 14px 14px; }
+    .card-name { font-size: 13px; }
+  }
+  .card:nth-child(1) { animation-delay: 0.05s; }
+  .card:nth-child(2) { animation-delay: 0.10s; }
+  .card:nth-child(3) { animation-delay: 0.15s; }
+  .card:nth-child(4) { animation-delay: 0.20s; }
+  .card:nth-child(5) { animation-delay: 0.25s; }
+  .card:nth-child(6) { animation-delay: 0.30s; }
+  .card:nth-child(7) { animation-delay: 0.35s; }
+  .card:nth-child(8) { animation-delay: 0.40s; }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="header-badge"><div class="pulse-dot"></div>リアルタイム更新中</div>
+    <h1 class="header-title">アトリエ受付状況</h1>
+    <p class="header-sub">アンデルセン公園 こども美術館</p>
+    <div class="decorative-line"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  </header>
+  <p class="last-updated" id="lastUpdated">最終更新：---</p>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#4caf76"></div>受付中</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f05a5a"></div>受付終了</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f5c842"></div>混雑中</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#b0b8c8"></div>休止中</div>
+  </div>
+  <div class="grid" id="grid"></div>
+  <p class="footer-note">
+    このページはスタッフが随時更新しています。<br>
+    最新の情報は受付窓口でもご確認いただけます。
+  </p>
+</div>
+<script>
+const ateliers = [
+  { id: 1, name: 'ワークショップ室' },
+  { id: 2, name: '版画のアトリエ' },
+  { id: 3, name: 'アンデルセンスタジオ' },
+  { id: 4, name: '食のアトリエ' },
+  { id: 5, name: '染のアトリエ' },
+  { id: 6, name: '織のアトリエ' },
+  { id: 7, name: '陶芸のアトリエ' },
+  { id: 8, name: '木のアトリエ' },
+];
+const STATUS = {
+  open: { label: '受付中',   cls: 'open' },
+  full: { label: '受付終了', cls: 'full' },
+  prep: { label: '混雑中',   cls: 'prep' },
+  done: { label: '休止中',   cls: 'done' },
+};
+function loadStatuses() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('atelierStatuses'));
+    if (saved && saved.length === ateliers.length) return saved;
+  } catch(e) {}
+  return ateliers.map(() => 'open');
+}
+let statuses = loadStatuses();
+function updateLastUpdated() {
+  const ts = localStorage.getItem('atelierLastUpdated');
+  document.getElementById('lastUpdated').textContent = ts ? '最終更新：' + ts : '最終更新：---';
+}
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  ateliers.forEach((a, i) => {
+    const st = STATUS[statuses[i]];
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-accent card-accent-${st.cls}"></div>
+      <div class="card-number">ATELIER ${String(a.id).padStart(2,'0')}</div>
+      <div class="card-name">${a.name}</div>
+      <span class="status-badge status-${st.cls}">${st.label}</span>
+    `;
+    grid.appendChild(card);
+  });
+}
+// 30秒ごとに自動更新
+function refresh() {
+  statuses = loadStatuses();
+  renderGrid();
+  updateLastUpdated();
+}
+refresh();
+setInterval(refresh, 30000);
+</script>
+</body>
+</html>

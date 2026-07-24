@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スタッフ管理パネル｜こども美術館</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #f0f4fa;
+    --green: #4caf76;
+    --green-light: #d4f0e0;
+    --red: #f05a5a;
+    --red-light: #fde8e8;
+    --yellow: #f5c842;
+    --yellow-light: #fef9e0;
+    --gray: #b0b8c8;
+    --gray-light: #f0f2f5;
+    --ink: #2c3550;
+    --white: #ffffff;
+    --radius: 16px;
+    --shadow: 0 4px 20px rgba(44,53,80,0.10);
+    --shadow-lg: 0 8px 32px rgba(44,53,80,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    background: var(--sky);
+    min-height: 100vh;
+    color: var(--ink);
+  }
+  .container { max-width: 680px; margin: 0 auto; padding: 40px 16px 60px; }
+  header {
+    background: var(--ink);
+    color: var(--white);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow-lg);
+  }
+  .header-label { font-size: 11px; letter-spacing: 0.15em; color: #8a97b5; margin-bottom: 6px; font-weight: 700; }
+  .header-title { font-size: 22px; font-weight: 900; margin-bottom: 4px; }
+  .header-sub { font-size: 12px; color: #8a97b5; }
+  .last-updated { font-size: 12px; color: #8a97b5; margin-top: 8px; }
+
+  .panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+  }
+  .panel-title { font-size: 15px; font-weight: 900; color: var(--ink); margin-bottom: 18px; padding-bottom: 12px; border-bottom: 2px solid var(--sky); }
+
+  .atelier-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid #f0f2f5;
+  }
+  .atelier-row:last-child { border-bottom: none; }
+  .atelier-num { font-size: 10px; font-weight: 700; color: #aab0c8; letter-spacing: 0.1em; width: 36px; flex-shrink: 0; }
+  .atelier-name { flex: 1; font-size: 14px; font-weight: 700; color: var(--ink); }
+
+  .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .status-btn {
+    border: 2px solid transparent;
+    border-radius: 100px;
+    padding: 6px 14px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    background: var(--gray-light);
+    color: #7a8299;
+  }
+  .status-btn:hover { transform: translateY(-1px); }
+  .status-btn.active-open { background: var(--green-light); color: #2e7d52; border-color: var(--green); }
+  .status-btn.active-full { background: var(--red-light);   color: #c0392b; border-color: var(--red); }
+  .status-btn.active-prep { background: var(--yellow-light); color: #9a7a00; border-color: var(--yellow); }
+  .status-btn.active-done { background: var(--gray-light);  color: #7a8299; border-color: var(--gray); }
+
+  .apply-wrap { display: flex; justify-content: center; margin-top: 8px; }
+  .apply-btn {
+    background: linear-gradient(135deg, #4caf76, #3a9660);
+    color: var(--white);
+    border: none;
+    border-radius: 100px;
+    padding: 14px 48px;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 15px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(76,175,118,0.4);
+    transition: all 0.2s ease;
+  }
+  .apply-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(76,175,118,0.5); }
+  .apply-btn:disabled { background: var(--gray); box-shadow: none; cursor: default; transform: none; }
+
+  .toast {
+    display: none;
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--white);
+    border-radius: 100px;
+    padding: 12px 28px;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: var(--shadow-lg);
+    z-index: 100;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform: translateX(-50%) translateY(10px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+
+  .preview-section { margin-top: 8px; }
+  .preview-title { font-size: 12px; font-weight: 700; color: #8a97b5; margin-bottom: 12px; letter-spacing: 0.08em; }
+  .preview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .preview-card {
+    background: var(--sky);
+    border-radius: 12px;
+    padding: 10px 8px;
+    text-align: center;
+    font-size: 11px;
+  }
+  .preview-card-name { font-weight: 700; color: var(--ink); margin-bottom: 4px; line-height: 1.3; }
+  .preview-badge { display: inline-block; border-radius: 100px; padding: 3px 8px; font-size: 10px; font-weight: 700; }
+  .badge-open { background: var(--green-light); color: #2e7d52; }
+  .badge-full { background: var(--red-light);   color: #c0392b; }
+  .badge-prep { background: var(--yellow-light); color: #9a7a00; }
+  .badge-done { background: var(--gray-light);  color: #7a8299; }
+
+  @media (max-width: 480px) {
+    .atelier-row { flex-wrap: wrap; }
+    .preview-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-label">STAFF ONLY</div>
+    <div class="header-title">スタッフ管理パネル</div>
+    <div class="header-sub">アンデルセン公園 こども美術館</div>
+    <div class="last-updated" id="lastUpdated">最終更新：---</div>
+  </header>
+
+  <div class="panel">
+    <div class="panel-title">受付状況を変更する</div>
+    <div id="atelierList"></div>
+  </div>
+
+  <div class="apply-wrap">
+    <button class="apply-btn" onclick="applyChanges()" id="applyBtn">更新する</button>
+  </div>
+
+  <div class="panel preview-section" style="margin-top:20px;">
+    <div class="panel-title">プレビュー（お客様に表示される状態）</div>
+    <div class="preview-grid" id="previewGrid"></div>
+  </div>
+
+</div>
+<div class="toast" id="toast">更新しました！</div>
+
+<script>
+const ateliers = [
+  { id: 1, name: 'ワークショップ室' },
+  { id: 2, name: '版画のアトリエ' },
+  { id: 3, name: 'アンデルセンスタジオ' },
+  { id: 4, name: '食のアトリエ' },
+  { id: 5, name: '染のアトリエ' },
+  { id: 6, name: '織のアトリエ' },
+  { id: 7, name: '陶芸のアトリエ' },
+  { id: 8, name: '木のアトリエ' },
+];
+const STATUS = {
+  open: { label: '受付中',   cls: 'open' },
+  full: { label: '受付終了', cls: 'full' },
+  prep: { label: '混雑中',   cls: 'prep' },
+  done: { label: '休止中',   cls: 'done' },
+};
+
+function loadStatuses() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('atelierStatuses'));
+    if (saved && saved.length === ateliers.length) return saved;
+  } catch(e) {}
+  return ateliers.map(() => 'open');
+}
+
+let statuses = loadStatuses();
+
+function renderList() {
+  const list = document.getElementById('atelierList');
+  list.innerHTML = '';
+  ateliers.forEach((a, i) => {
+    const row = document.createElement('div');
+    row.className = 'atelier-row';
+    row.innerHTML = `
+      <div class="atelier-num">No.${String(a.id).padStart(2,'0')}</div>
+      <div class="atelier-name">${a.name}</div>
+      <div class="btn-group" id="btns_${i}">
+        ${Object.entries(STATUS).map(([key, s]) => `
+          <button class="status-btn ${statuses[i]===key ? 'active-'+s.cls : ''}"
+            onclick="setStatus(${i},'${key}')">${s.label}</button>
+        `).join('')}
+      </div>
+    `;
+    list.appendChild(row);
+  });
+  renderPreview();
+}
+
+function setStatus(i, key) {
+  statuses[i] = key;
+  const group = document.getElementById('btns_' + i);
+  group.querySelectorAll('.status-btn').forEach((btn, j) => {
+    const keys = Object.keys(STATUS);
+    const s = STATUS[keys[j]];
+    btn.className = 'status-btn' + (statuses[i]===keys[j] ? ' active-'+s.cls : '');
+  });
+  renderPreview();
+}
+
+function renderPreview() {
+  const grid = document.getElementById('previewGrid');
+  grid.innerHTML = '';
+  ateliers.forEach((a, i) => {
+    const st = STATUS[statuses[i]];
+    const card = document.createElement('div');
+    card.className = 'preview-card';
+    card.innerHTML = `
+      <div class="preview-card-name">${a.name}</div>
+      <span class="preview-badge badge-${st.cls}">${st.label}</span>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function applyChanges() {
+  localStorage.setItem('atelierStatuses', JSON.stringify(statuses));
+  const now = new Date().toLocaleString('ja-JP', {
+    year: 'numeric', month: 'long', day: 'numeric',
+    weekday: 'short', hour: '2-digit', minute: '2-digit'
+  });
+  localStorage.setItem('atelierLastUpdated', now);
+  document.getElementById('lastUpdated').textContent = '最終更新：' + now;
+
+  const toast = document.getElementById('toast');
+  toast.style.display = 'block';
+  setTimeout(() => { toast.style.display = 'none'; }, 2500);
+}
+
+function updateLastUpdated() {
+  const ts = localStorage.getItem('atelierLastUpdated');
+  if (ts) document.getElementById('lastUpdated').textContent = '最終更新：' + ts;
+}
+
+renderList();
+updateLastUpdated();
+</script>
+</body>
+</html>
