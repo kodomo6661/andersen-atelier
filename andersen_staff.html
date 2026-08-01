@@ -7,137 +7,79 @@
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --sky: #f0f4fa;
-    --green: #4caf76;
-    --green-light: #d4f0e0;
-    --red: #f05a5a;
-    --red-light: #fde8e8;
-    --yellow: #f5c842;
-    --yellow-light: #fef9e0;
-    --gray: #b0b8c8;
-    --gray-light: #f0f2f5;
-    --ink: #2c3550;
-    --white: #ffffff;
+    --sky: #f0f4fa; --green: #4caf76; --green-light: #d4f0e0;
+    --red: #f05a5a; --red-light: #fde8e8;
+    --yellow: #f5c842; --yellow-light: #fef9e0;
+    --gray: #b0b8c8; --gray-light: #f0f2f5;
+    --ink: #2c3550; --white: #fff;
     --radius: 16px;
     --shadow: 0 4px 20px rgba(44,53,80,0.10);
     --shadow-lg: 0 8px 32px rgba(44,53,80,0.15);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Zen Maru Gothic', sans-serif;
-    background: var(--sky);
-    min-height: 100vh;
-    color: var(--ink);
-  }
+  body { font-family: 'Zen Maru Gothic', sans-serif; background: var(--sky); min-height: 100vh; color: var(--ink); }
   .container { max-width: 680px; margin: 0 auto; padding: 40px 16px 60px; }
-  header {
-    background: var(--ink);
-    color: var(--white);
-    border-radius: var(--radius);
-    padding: 24px 28px;
-    margin-bottom: 28px;
-    box-shadow: var(--shadow-lg);
-  }
-  .header-label { font-size: 11px; letter-spacing: 0.15em; color: #8a97b5; margin-bottom: 6px; font-weight: 700; }
+
+  header { background: var(--ink); color: var(--white); border-radius: var(--radius); padding: 24px 28px; margin-bottom: 24px; box-shadow: var(--shadow-lg); }
+  .header-label { font-size: 11px; letter-spacing: .15em; color: #8a97b5; margin-bottom: 6px; font-weight: 700; }
   .header-title { font-size: 22px; font-weight: 900; margin-bottom: 4px; }
   .header-sub { font-size: 12px; color: #8a97b5; }
   .last-updated { font-size: 12px; color: #8a97b5; margin-top: 8px; }
 
-  .panel {
-    background: var(--white);
-    border-radius: var(--radius);
-    padding: 28px 24px;
-    box-shadow: var(--shadow);
-    margin-bottom: 20px;
-  }
-  .panel-title { font-size: 15px; font-weight: 900; color: var(--ink); margin-bottom: 18px; padding-bottom: 12px; border-bottom: 2px solid var(--sky); }
+  .panel { background: var(--white); border-radius: var(--radius); padding: 26px 24px; box-shadow: var(--shadow); margin-bottom: 20px; }
+  .panel-title { font-size: 15px; font-weight: 900; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 2px solid var(--sky); }
 
-  .atelier-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 0;
-    border-bottom: 1px solid #f0f2f5;
+  /* ログイン */
+  .login-label { font-size: 13px; font-weight: 700; margin-bottom: 10px; display: block; }
+  .pw-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .pw-input {
+    flex: 1; min-width: 180px; border: 2px solid #e0e4f0; border-radius: 10px;
+    padding: 11px 14px; font-family: 'Zen Maru Gothic', sans-serif; font-size: 14px; outline: none;
   }
+  .pw-input:focus { border-color: #64a0f0; }
+  .pw-btn {
+    background: var(--ink); color: var(--white); border: none; border-radius: 10px;
+    padding: 11px 26px; font-family: 'Zen Maru Gothic', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+  .pw-btn:hover { background: #3a4568; }
+  .pw-error { color: #c0392b; font-size: 12px; font-weight: 700; margin-top: 10px; display: none; }
+
+  .atelier-row { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid #f0f2f5; }
   .atelier-row:last-child { border-bottom: none; }
-  .atelier-num { font-size: 10px; font-weight: 700; color: #aab0c8; letter-spacing: 0.1em; width: 36px; flex-shrink: 0; }
-  .atelier-name { flex: 1; font-size: 14px; font-weight: 700; color: var(--ink); }
+  .atelier-num { font-size: 10px; font-weight: 700; color: #aab0c8; letter-spacing: .1em; width: 36px; flex-shrink: 0; }
+  .atelier-name { flex: 1; font-size: 14px; font-weight: 700; min-width: 110px; }
 
   .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
   .status-btn {
-    border: 2px solid transparent;
-    border-radius: 100px;
-    padding: 6px 14px;
-    font-family: 'Zen Maru Gothic', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    background: var(--gray-light);
-    color: #7a8299;
+    border: 2px solid transparent; border-radius: 100px; padding: 6px 14px;
+    font-family: 'Zen Maru Gothic', sans-serif; font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: all .15s ease; background: var(--gray-light); color: #7a8299;
   }
   .status-btn:hover { transform: translateY(-1px); }
-  .status-btn.active-open { background: var(--green-light); color: #2e7d52; border-color: var(--green); }
-  .status-btn.active-full { background: var(--red-light);   color: #c0392b; border-color: var(--red); }
-  .status-btn.active-prep { background: var(--yellow-light); color: #9a7a00; border-color: var(--yellow); }
-  .status-btn.active-done { background: var(--gray-light);  color: #7a8299; border-color: var(--gray); }
+  .status-btn.on-open { background: var(--green-light); color: #2e7d52; border-color: var(--green); }
+  .status-btn.on-full { background: var(--red-light); color: #c0392b; border-color: var(--red); }
+  .status-btn.on-prep { background: var(--yellow-light); color: #9a7a00; border-color: var(--yellow); }
+  .status-btn.on-done { background: var(--gray-light); color: #7a8299; border-color: var(--gray); }
 
-  .apply-wrap { display: flex; justify-content: center; margin-top: 8px; }
+  .apply-wrap { display: flex; justify-content: center; }
   .apply-btn {
-    background: linear-gradient(135deg, #4caf76, #3a9660);
-    color: var(--white);
-    border: none;
-    border-radius: 100px;
-    padding: 14px 48px;
-    font-family: 'Zen Maru Gothic', sans-serif;
-    font-size: 15px;
-    font-weight: 900;
-    cursor: pointer;
-    box-shadow: 0 4px 16px rgba(76,175,118,0.4);
-    transition: all 0.2s ease;
+    background: linear-gradient(135deg,#4caf76,#3a9660); color: var(--white); border: none;
+    border-radius: 100px; padding: 14px 48px; font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 15px; font-weight: 900; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(76,175,118,.4); transition: all .2s ease;
   }
-  .apply-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(76,175,118,0.5); }
+  .apply-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(76,175,118,.5); }
   .apply-btn:disabled { background: var(--gray); box-shadow: none; cursor: default; transform: none; }
 
   .toast {
-    display: none;
-    position: fixed;
-    bottom: 32px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--ink);
-    color: var(--white);
-    border-radius: 100px;
-    padding: 12px 28px;
-    font-size: 13px;
-    font-weight: 700;
-    box-shadow: var(--shadow-lg);
-    z-index: 100;
-    animation: fadeIn 0.3s ease;
+    display: none; position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: var(--white); border-radius: 100px; padding: 12px 28px;
+    font-size: 13px; font-weight: 700; box-shadow: var(--shadow-lg); z-index: 100;
   }
-  @keyframes fadeIn { from { opacity:0; transform: translateX(-50%) translateY(10px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+  .toast.err { background: #c0392b; }
 
-  .preview-section { margin-top: 8px; }
-  .preview-title { font-size: 12px; font-weight: 700; color: #8a97b5; margin-bottom: 12px; letter-spacing: 0.08em; }
-  .preview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-  .preview-card {
-    background: var(--sky);
-    border-radius: 12px;
-    padding: 10px 8px;
-    text-align: center;
-    font-size: 11px;
-  }
-  .preview-card-name { font-weight: 700; color: var(--ink); margin-bottom: 4px; line-height: 1.3; }
-  .preview-badge { display: inline-block; border-radius: 100px; padding: 3px 8px; font-size: 10px; font-weight: 700; }
-  .badge-open { background: var(--green-light); color: #2e7d52; }
-  .badge-full { background: var(--red-light);   color: #c0392b; }
-  .badge-prep { background: var(--yellow-light); color: #9a7a00; }
-  .badge-done { background: var(--gray-light);  color: #7a8299; }
-
-  @media (max-width: 480px) {
-    .atelier-row { flex-wrap: wrap; }
-    .preview-grid { grid-template-columns: repeat(2, 1fr); }
-  }
+  .state-msg { text-align: center; padding: 30px 10px; color: #8a97b5; font-size: 13px; }
+  .hidden { display: none; }
 </style>
 </head>
 <body>
@@ -147,53 +89,83 @@
     <div class="header-label">STAFF ONLY</div>
     <div class="header-title">スタッフ管理パネル</div>
     <div class="header-sub">アンデルセン公園 こども美術館</div>
-    <div class="last-updated" id="lastUpdated">最終更新：---</div>
+    <div class="last-updated" id="lastUpdated"></div>
   </header>
 
-  <div class="panel">
-    <div class="panel-title">受付状況を変更する</div>
-    <div id="atelierList"></div>
+  <!-- ログイン画面 -->
+  <div class="panel" id="loginPanel">
+    <div class="panel-title">合言葉を入力してください</div>
+    <div class="pw-row">
+      <input type="password" class="pw-input" id="pwInput" placeholder="合言葉" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="pw-btn" onclick="doLogin()">ログイン</button>
+    </div>
+    <div class="pw-error" id="pwError">合言葉が違います</div>
   </div>
 
-  <div class="apply-wrap">
-    <button class="apply-btn" onclick="applyChanges()" id="applyBtn">更新する</button>
-  </div>
+  <!-- 管理画面 -->
+  <div id="mainArea" class="hidden">
+    <div class="panel">
+      <div class="panel-title">受付状況を変更する</div>
+      <div id="atelierList"></div>
+      <div class="state-msg" id="loadMsg">読み込み中...</div>
+    </div>
 
-  <div class="panel preview-section" style="margin-top:20px;">
-    <div class="panel-title">プレビュー（お客様に表示される状態）</div>
-    <div class="preview-grid" id="previewGrid"></div>
+    <div class="apply-wrap">
+      <button class="apply-btn" onclick="applyChanges()" id="applyBtn">更新する</button>
+    </div>
   </div>
 
 </div>
-<div class="toast" id="toast">更新しました！</div>
+<div class="toast" id="toast"></div>
 
 <script>
-const ateliers = [
-  { id: 1, name: 'ワークショップ室' },
-  { id: 2, name: '版画のアトリエ' },
-  { id: 3, name: 'アンデルセンスタジオ' },
-  { id: 4, name: '食のアトリエ' },
-  { id: 5, name: '染のアトリエ' },
-  { id: 6, name: '織のアトリエ' },
-  { id: 7, name: '陶芸のアトリエ' },
-  { id: 8, name: '木のアトリエ' },
-];
-const STATUS = {
-  open: { label: '受付中',   cls: 'open' },
-  full: { label: '受付終了', cls: 'full' },
-  prep: { label: '混雑中',   cls: 'prep' },
-  done: { label: '休止中',   cls: 'done' },
-};
+// ===================================================================
+// ★ ここに Google Apps Script のウェブアプリURLを貼り付けてください
+// ===================================================================
+const API_URL = 'https://script.google.com/macros/s/AKfycbyj7oPpnkTFF4P5P-RBhsC9sfDqG5mLfztI1FZqapcPgeAgiZbQ1uSsjMsOT-AhB5NoMQ/exec';
 
-function loadStatuses() {
-  try {
-    const saved = JSON.parse(localStorage.getItem('atelierStatuses'));
-    if (saved && saved.length === ateliers.length) return saved;
-  } catch(e) {}
-  return ateliers.map(() => 'open');
+const LABELS = ['受付中', '受付終了', '混雑中', '休止中'];
+const CLS = { '受付中':'open', '受付終了':'full', '混雑中':'prep', '休止中':'done' };
+
+let password = '';
+let ateliers = [];
+
+function showToast(text, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = text;
+  t.className = 'toast' + (isError ? ' err' : '');
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 2800);
 }
 
-let statuses = loadStatuses();
+async function doLogin() {
+  const pw = document.getElementById('pwInput').value.trim();
+  if (!pw) return;
+  password = pw;
+
+  // 合言葉の正しさは更新時に検証されるため、ここでは画面を切り替えてデータを取得
+  document.getElementById('loginPanel').classList.add('hidden');
+  document.getElementById('mainArea').classList.remove('hidden');
+  await loadStatus();
+}
+
+async function loadStatus() {
+  const msg = document.getElementById('loadMsg');
+  try {
+    const res = await fetch(API_URL + '?t=' + Date.now());
+    const data = await res.json();
+    if (!data.ok) throw new Error('data');
+
+    ateliers = data.ateliers;
+    renderList();
+    msg.style.display = 'none';
+    document.getElementById('lastUpdated').textContent =
+      data.updated ? '最終更新：' + data.updated : '';
+
+  } catch (err) {
+    msg.textContent = 'データを読み込めませんでした。ページを再読み込みしてください。';
+  }
+}
 
 function renderList() {
   const list = document.getElementById('atelierList');
@@ -201,68 +173,58 @@ function renderList() {
   ateliers.forEach((a, i) => {
     const row = document.createElement('div');
     row.className = 'atelier-row';
-    row.innerHTML = `
-      <div class="atelier-num">No.${String(a.id).padStart(2,'0')}</div>
-      <div class="atelier-name">${a.name}</div>
-      <div class="btn-group" id="btns_${i}">
-        ${Object.entries(STATUS).map(([key, s]) => `
-          <button class="status-btn ${statuses[i]===key ? 'active-'+s.cls : ''}"
-            onclick="setStatus(${i},'${key}')">${s.label}</button>
-        `).join('')}
-      </div>
-    `;
+    const btns = LABELS.map(label =>
+      '<button class="status-btn ' + (a.status === label ? 'on-' + CLS[label] : '') + '"' +
+      ' onclick="setStatus(' + i + ',\'' + label + '\')">' + label + '</button>'
+    ).join('');
+    row.innerHTML =
+      '<div class="atelier-num">No.' + String(a.id).padStart(2,'0') + '</div>' +
+      '<div class="atelier-name">' + a.name + '</div>' +
+      '<div class="btn-group">' + btns + '</div>';
     list.appendChild(row);
   });
-  renderPreview();
 }
 
-function setStatus(i, key) {
-  statuses[i] = key;
-  const group = document.getElementById('btns_' + i);
-  group.querySelectorAll('.status-btn').forEach((btn, j) => {
-    const keys = Object.keys(STATUS);
-    const s = STATUS[keys[j]];
-    btn.className = 'status-btn' + (statuses[i]===keys[j] ? ' active-'+s.cls : '');
-  });
-  renderPreview();
+function setStatus(i, label) {
+  ateliers[i].status = label;
+  renderList();
 }
 
-function renderPreview() {
-  const grid = document.getElementById('previewGrid');
-  grid.innerHTML = '';
-  ateliers.forEach((a, i) => {
-    const st = STATUS[statuses[i]];
-    const card = document.createElement('div');
-    card.className = 'preview-card';
-    card.innerHTML = `
-      <div class="preview-card-name">${a.name}</div>
-      <span class="preview-badge badge-${st.cls}">${st.label}</span>
-    `;
-    grid.appendChild(card);
-  });
+async function applyChanges() {
+  const btn = document.getElementById('applyBtn');
+  btn.disabled = true;
+  btn.textContent = '更新中...';
+
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        password: password,
+        statuses: ateliers.map(a => a.status)
+      })
+    });
+    const data = await res.json();
+
+    if (data.error === 'auth') {
+      showToast('合言葉が違います', true);
+      setTimeout(() => location.reload(), 1500);
+      return;
+    }
+    if (!data.ok) throw new Error('failed');
+
+    ateliers = data.ateliers;
+    renderList();
+    document.getElementById('lastUpdated').textContent = '最終更新：' + data.updated;
+    showToast('更新しました');
+
+  } catch (err) {
+    showToast('更新できませんでした', true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '更新する';
+  }
 }
-
-function applyChanges() {
-  localStorage.setItem('atelierStatuses', JSON.stringify(statuses));
-  const now = new Date().toLocaleString('ja-JP', {
-    year: 'numeric', month: 'long', day: 'numeric',
-    weekday: 'short', hour: '2-digit', minute: '2-digit'
-  });
-  localStorage.setItem('atelierLastUpdated', now);
-  document.getElementById('lastUpdated').textContent = '最終更新：' + now;
-
-  const toast = document.getElementById('toast');
-  toast.style.display = 'block';
-  setTimeout(() => { toast.style.display = 'none'; }, 2500);
-}
-
-function updateLastUpdated() {
-  const ts = localStorage.getItem('atelierLastUpdated');
-  if (ts) document.getElementById('lastUpdated').textContent = '最終更新：' + ts;
-}
-
-renderList();
-updateLastUpdated();
 </script>
 </body>
 </html>
