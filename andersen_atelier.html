@@ -69,6 +69,11 @@
   .card-accent-prep { background: linear-gradient(90deg,#f5c842,#f9da7a); }
   .card-accent-done { background: linear-gradient(90deg,#b0b8c8,#d0d5e0); }
   .state-msg { text-align: center; padding: 48px 20px; color: #8a97b5; font-size: 14px; font-weight: 500; }
+  .holiday-banner {
+    display: none; background: var(--red-light); color: #c0392b; border-radius: var(--radius);
+    padding: 18px 20px; text-align: center; font-size: 15px; font-weight: 900;
+    margin-bottom: 24px; box-shadow: var(--shadow);
+  }
   .retry-btn {
     display: inline-block; margin-top: 14px; background: var(--ink); color: var(--white);
     border: none; border-radius: 100px; padding: 10px 26px;
@@ -98,6 +103,8 @@
 
   <p class="last-updated" id="lastUpdated">読み込み中...</p>
 
+  <div class="holiday-banner" id="holidayBanner">本日は休園日です</div>
+
   <div class="legend">
     <div class="legend-item"><div class="legend-dot" style="background:#4caf76"></div>受付中</div>
     <div class="legend-item"><div class="legend-dot" style="background:#f05a5a"></div>受付終了</div>
@@ -118,7 +125,7 @@
 // ===================================================================
 // ★ ここに Google Apps Script のウェブアプリURLを貼り付けてください
 // ===================================================================
-const API_URL = 'https://script.google.com/macros/s/AKfycbyj7oPpnkTFF4P5P-RBhsC9sfDqG5mLfztI1FZqapcPgeAgiZbQ1uSsjMsOT-AhB5NoMQ/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbweCx8zoxW5ljnNGkOTCI6LLkJPlTsgvy_PcjCopQXYmCkthIe5ExiUaGZN-Np5Cl6c/exec';
 
 const CLS = { '受付中':'open', '受付終了':'full', '混雑中':'prep', '休止中':'done' };
 
@@ -148,6 +155,7 @@ async function loadStatus() {
     renderGrid(data.ateliers);
     document.getElementById('lastUpdated').textContent =
       data.updated ? '最終更新：' + data.updated : '最終更新：---';
+    document.getElementById('holidayBanner').style.display = data.holiday ? 'block' : 'none';
     msg.style.display = 'none';
 
   } catch (err) {
