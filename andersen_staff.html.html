@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スタッフ管理パネル｜子ども美術館</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #f0f4fa; --green: #4caf76; --green-light: #d4f0e0;
+    --red: #f05a5a; --red-light: #fde8e8;
+    --yellow: #f5c842; --yellow-light: #fef9e0;
+    --gray: #b0b8c8; --gray-light: #f0f2f5;
+    --ink: #2c3550; --white: #fff;
+    --radius: 16px;
+    --shadow: 0 4px 20px rgba(44,53,80,0.10);
+    --shadow-lg: 0 8px 32px rgba(44,53,80,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Zen Maru Gothic', sans-serif; background: var(--sky); min-height: 100vh; color: var(--ink); }
+  .container { max-width: 680px; margin: 0 auto; padding: 40px 16px 60px; }
+
+  header { background: var(--ink); color: var(--white); border-radius: var(--radius); padding: 24px 28px; margin-bottom: 24px; box-shadow: var(--shadow-lg); }
+  .header-label { font-size: 11px; letter-spacing: .15em; color: #8a97b5; margin-bottom: 6px; font-weight: 700; }
+  .header-title { font-size: 22px; font-weight: 900; margin-bottom: 4px; }
+  .header-sub { font-size: 12px; color: #8a97b5; }
+  .last-updated { font-size: 12px; color: #8a97b5; margin-top: 8px; }
+  .day-badge {
+    display: inline-block; background: rgba(255,255,255,.15); border-radius: 100px;
+    padding: 3px 12px; font-size: 11px; font-weight: 700; margin-top: 10px;
+  }
+
+  .panel { background: var(--white); border-radius: var(--radius); padding: 26px 24px; box-shadow: var(--shadow); margin-bottom: 20px; }
+  .panel-title { font-size: 15px; font-weight: 900; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 2px solid var(--sky); }
+
+  /* ログイン */
+  .login-label { font-size: 13px; font-weight: 700; margin-bottom: 10px; display: block; }
+  .pw-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .pw-input {
+    flex: 1; min-width: 180px; border: 2px solid #e0e4f0; border-radius: 10px;
+    padding: 11px 14px; font-family: 'Zen Maru Gothic', sans-serif; font-size: 14px; outline: none;
+  }
+  .pw-input:focus { border-color: #64a0f0; }
+  .pw-btn {
+    background: var(--ink); color: var(--white); border: none; border-radius: 10px;
+    padding: 11px 26px; font-family: 'Zen Maru Gothic', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+  .pw-btn:hover { background: #3a4568; }
+  .pw-error { color: #c0392b; font-size: 12px; font-weight: 700; margin-top: 10px; display: none; }
+
+  .atelier-row { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid #f0f2f5; }
+  .atelier-row:last-child { border-bottom: none; }
+  .atelier-num { font-size: 10px; font-weight: 700; color: #aab0c8; letter-spacing: .1em; width: 36px; flex-shrink: 0; }
+  .atelier-name { flex: 1; font-size: 14px; font-weight: 700; min-width: 110px; }
+  .close-time { display: block; font-size: 11px; color: #8a97b5; font-weight: 500; margin-top: 2px; }
+  .manual-tag { display: inline-block; background: #fef9e0; color: #9a7a00; border-radius: 100px;
+    padding: 1px 8px; font-size: 10px; font-weight: 700; margin-left: 6px; }
+
+  .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .status-btn {
+    border: 2px solid transparent; border-radius: 100px; padding: 6px 14px;
+    font-family: 'Zen Maru Gothic', sans-serif; font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: all .15s ease; background: var(--gray-light); color: #7a8299;
+  }
+  .status-btn:hover { transform: translateY(-1px); }
+  .status-btn.on-open { background: var(--green-light); color: #2e7d52; border-color: var(--green); }
+  .status-btn.on-full { background: var(--red-light); color: #c0392b; border-color: var(--red); }
+  .status-btn.on-prep { background: var(--yellow-light); color: #9a7a00; border-color: var(--yellow); }
+  .status-btn.on-done { background: var(--gray-light); color: #7a8299; border-color: var(--gray); }
+
+  .apply-wrap { display: flex; justify-content: center; }
+  .apply-btn {
+    background: linear-gradient(135deg,#4caf76,#3a9660); color: var(--white); border: none;
+    border-radius: 100px; padding: 14px 48px; font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 15px; font-weight: 900; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(76,175,118,.4); transition: all .2s ease;
+  }
+  .apply-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(76,175,118,.5); }
+  .apply-btn:disabled { background: var(--gray); box-shadow: none; cursor: default; transform: none; }
+
+  .toast {
+    display: none; position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: var(--white); border-radius: 100px; padding: 12px 28px;
+    font-size: 13px; font-weight: 700; box-shadow: var(--shadow-lg); z-index: 100;
+  }
+  .toast.err { background: #c0392b; }
+
+  .state-msg { text-align: center; padding: 30px 10px; color: #8a97b5; font-size: 13px; }
+
+  /* アラーム設定行 */
+  .alarm-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap;
+  }
+  .alarm-label { font-size: 13px; font-weight: 700; }
+  .alarm-desc { font-size: 11px; color: #8a97b5; margin-top: 3px; font-weight: 500; }
+  .switch { position: relative; display: inline-block; width: 50px; height: 28px; flex-shrink: 0; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; cursor: pointer; inset: 0; background: #d0d5e0;
+    border-radius: 100px; transition: .2s;
+  }
+  .slider:before {
+    content: ""; position: absolute; height: 22px; width: 22px; left: 3px; top: 3px;
+    background: #fff; border-radius: 50%; transition: .2s;
+  }
+  .switch input:checked + .slider { background: var(--green); }
+  .switch input:checked + .slider:before { transform: translateX(22px); }
+  .test-btn {
+    background: var(--gray-light); color: #5a6478; border: none; border-radius: 100px;
+    padding: 7px 16px; font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 12px; font-weight: 700; cursor: pointer;
+  }
+  .test-btn:hover { background: #e2e6ee; }
+
+  /* アラーム通知 */
+  .alarm-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(44,53,80,.55);
+    z-index: 200; align-items: center; justify-content: center; padding: 20px;
+  }
+  .alarm-overlay.show { display: flex; }
+  .alarm-box {
+    background: #fff; border-radius: 20px; padding: 32px 28px; max-width: 380px; width: 100%;
+    text-align: center; box-shadow: 0 12px 48px rgba(0,0,0,.3);
+    animation: alarmIn .25s ease;
+  }
+  @keyframes alarmIn { from { opacity:0; transform:scale(.92);} to { opacity:1; transform:scale(1);} }
+  .alarm-time { font-size: 12px; font-weight: 700; color: var(--red); letter-spacing: .1em; margin-bottom: 10px; }
+  .alarm-heading { font-size: 20px; font-weight: 900; margin-bottom: 14px; }
+  .alarm-names { font-size: 15px; font-weight: 700; color: #c0392b; line-height: 1.7; margin-bottom: 22px; }
+  .alarm-close {
+    background: var(--ink); color: #fff; border: none; border-radius: 100px;
+    padding: 12px 38px; font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 14px; font-weight: 900; cursor: pointer;
+  }
+  .alarm-close:hover { background: #3a4568; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-label">STAFF ONLY</div>
+    <div class="header-title">スタッフ管理パネル</div>
+    <div class="header-sub">アンデルセン公園 子ども美術館</div>
+    <div class="day-badge" id="dayBadge"></div>
+    <div class="last-updated" id="lastUpdated"></div>
+  </header>
+
+  <!-- ログイン画面 -->
+  <div class="panel" id="loginPanel">
+    <div class="panel-title">合言葉を入力してください</div>
+    <div class="pw-row">
+      <input type="password" class="pw-input" id="pwInput" placeholder="合言葉" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="pw-btn" onclick="doLogin()">ログイン</button>
+    </div>
+    <div class="pw-error" id="pwError">合言葉が違います</div>
+  </div>
+
+  <!-- 管理画面 -->
+  <div id="mainArea" class="hidden">
+    <div class="panel">
+      <div class="panel-title">受付状況を変更する</div>
+      <div id="atelierList"></div>
+      <div class="state-msg" id="loadMsg">読み込み中...</div>
+    </div>
+
+    <div class="apply-wrap">
+      <button class="apply-btn" onclick="applyChanges()" id="applyBtn">更新する</button>
+    </div>
+
+    <div class="panel" style="margin-top:20px;">
+      <div class="panel-title">終了時刻アラーム</div>
+      <div class="alarm-row">
+        <div>
+          <div class="alarm-label">終了時刻に音で知らせる</div>
+          <div class="alarm-desc">この画面を開いている間だけ動作します</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <button class="test-btn" onclick="testAlarm()">音を確認</button>
+          <label class="switch">
+            <input type="checkbox" id="alarmToggle" onchange="toggleAlarm()">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<div class="alarm-overlay" id="alarmOverlay">
+  <div class="alarm-box">
+    <div class="alarm-time" id="alarmTime"></div>
+    <div class="alarm-heading">受付終了時刻です</div>
+    <div class="alarm-names" id="alarmNames"></div>
+    <button class="alarm-close" onclick="stopAlarm()">確認しました</button>
+  </div>
+</div>
+
+<script>
+// ===================================================================
+// ★ ここに Google Apps Script のウェブアプリURLを貼り付けてください
+// ===================================================================
+const API_URL = 'https://script.google.com/macros/s/AKfycbweCx8zoxW5ljnNGkOTCI6LLkJPlTsgvy_PcjCopQXYmCkthIe5ExiUaGZN-Np5Cl6c/exec';
+
+const LABELS = ['受付中', '受付終了', '混雑中', '休止中'];
+const CLS = { '受付中':'open', '受付終了':'full', '混雑中':'prep', '休止中':'done' };
+
+let password = '';
+let ateliers = [];
+
+function showToast(text, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = text;
+  t.className = 'toast' + (isError ? ' err' : '');
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 2800);
+}
+
+async function doLogin() {
+  const pw = document.getElementById('pwInput').value.trim();
+  if (!pw) return;
+  password = pw;
+
+  // 合言葉の正しさは更新時に検証されるため、ここでは画面を切り替えてデータを取得
+  document.getElementById('loginPanel').classList.add('hidden');
+  document.getElementById('mainArea').classList.remove('hidden');
+  await loadStatus();
+  // 終了時刻がシート側で変更された場合に備え、定期的に読み直す
+  setInterval(refreshCloseTimes, 300000);
+}
+
+async function loadStatus() {
+  const msg = document.getElementById('loadMsg');
+  try {
+    const res = await fetch(API_URL + '?t=' + Date.now());
+    const data = await res.json();
+    if (!data.ok) throw new Error('data');
+
+    ateliers = data.ateliers;
+    renderList();
+    msg.style.display = 'none';
+    document.getElementById('lastUpdated').textContent =
+      data.updated ? '最終更新：' + data.updated : '';
+    if (data.dayType) {
+      document.getElementById('dayBadge').textContent =
+        '本日は' + data.dayType + 'の受付時間です';
+    }
+    if (alarmOn) checkAlarm();
+
+  } catch (err) {
+    msg.textContent = 'データを読み込めませんでした。ページを再読み込みしてください。';
+  }
+}
+
+function renderList() {
+  const list = document.getElementById('atelierList');
+  list.innerHTML = '';
+  ateliers.forEach((a, i) => {
+    const row = document.createElement('div');
+    row.className = 'atelier-row';
+    const btns = LABELS.map(label =>
+      '<button class="status-btn ' + (a.status === label ? 'on-' + CLS[label] : '') + '"' +
+      ' onclick="setStatus(' + i + ',\'' + label + '\')">' + label + '</button>'
+    ).join('');
+    const manualTag = a.manual ? '<span class="manual-tag">手動優先</span>' : '';
+    const closeLabel = a.close ? '<span class="close-time">〜' + a.close + manualTag + '</span>' : '';
+    row.innerHTML =
+      '<div class="atelier-num">No.' + String(a.id).padStart(2,'0') + '</div>' +
+      '<div class="atelier-name">' + a.name + closeLabel + '</div>' +
+      '<div class="btn-group">' + btns + '</div>';
+    list.appendChild(row);
+  });
+}
+
+function setStatus(i, label) {
+  ateliers[i].status = label;
+  renderList();
+}
+
+async function applyChanges() {
+  const btn = document.getElementById('applyBtn');
+  btn.disabled = true;
+  btn.textContent = '更新中...';
+
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        password: password,
+        statuses: ateliers.map(a => a.status)
+      })
+    });
+    const data = await res.json();
+
+    if (data.error === 'auth') {
+      showToast('合言葉が違います', true);
+      setTimeout(() => location.reload(), 1500);
+      return;
+    }
+    if (!data.ok) throw new Error('failed');
+
+    ateliers = data.ateliers;
+    renderList();
+    document.getElementById('lastUpdated').textContent = '最終更新：' + data.updated;
+    showToast('更新しました');
+
+  } catch (err) {
+    showToast('更新できませんでした', true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '更新する';
+  }
+}
+
+// シート側で終了時刻が変更されても追従できるようにする
+// （編集中の状態は上書きしない）
+async function refreshCloseTimes() {
+  try {
+    const res = await fetch(API_URL + '?t=' + Date.now());
+    const data = await res.json();
+    if (!data.ok) return;
+
+    data.ateliers.forEach(function(a, i) {
+      if (ateliers[i]) ateliers[i].close = a.close;
+    });
+    renderList();
+  } catch (e) {}
+}
+
+// ===================================================================
+// 終了時刻アラーム
+// ===================================================================
+let alarmOn = false;
+let audioCtx = null;
+let alarmTimer = null;
+let firedToday = {};   // { 'アトリエ名|2026-08-21': true }
+
+function todayKey() {
+  const d = new Date();
+  return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+}
+
+// ブラウザ内蔵の音源でチャイムを鳴らす（音声ファイル不要）
+function playChime() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    const notes = [880, 698, 587];   // ラ→ファ→レ の下降チャイム
+    notes.forEach(function(freq, i) {
+      const t0 = audioCtx.currentTime + i * 0.42;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0, t0);
+      gain.gain.linearRampToValueAtTime(0.28, t0 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.9);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(t0);
+      osc.stop(t0 + 0.95);
+    });
+  } catch (e) {}
+}
+
+function testAlarm() {
+  playChime();
+}
+
+function toggleAlarm() {
+  alarmOn = document.getElementById('alarmToggle').checked;
+
+  if (alarmOn) {
+    // ユーザー操作のタイミングで音声を有効化しておく
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    } catch (e) {}
+    showToast('アラームをオンにしました');
+    startAlarmWatch();
+  } else {
+    showToast('アラームをオフにしました');
+    if (alarmTimer) { clearInterval(alarmTimer); alarmTimer = null; }
+  }
+}
+
+function startAlarmWatch() {
+  if (alarmTimer) clearInterval(alarmTimer);
+  checkAlarm();
+  alarmTimer = setInterval(checkAlarm, 20000);   // 20秒ごとに確認
+}
+
+function checkAlarm() {
+  if (!alarmOn || !ateliers.length) return;
+
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const day = todayKey();
+  const due = [];
+
+  ateliers.forEach(function(a) {
+    if (!a.close) return;
+    const m = String(a.close).match(/(\d{1,2}):(\d{2})/);
+    if (!m) return;
+
+    const closeMin = parseInt(m[1],10) * 60 + parseInt(m[2],10);
+    const key = a.name + '|' + day;
+
+    // 終了時刻から2分以内で、まだ鳴らしていないもの
+    if (nowMin >= closeMin && nowMin < closeMin + 2 && !firedToday[key]) {
+      firedToday[key] = true;
+      due.push(a.name + '（' + a.close + '）');
+    }
+  });
+
+  if (due.length) fireAlarm(due);
+}
+
+function fireAlarm(names) {
+  const now = new Date();
+  document.getElementById('alarmTime').textContent =
+    ('0'+now.getHours()).slice(-2) + ':' + ('0'+now.getMinutes()).slice(-2);
+  document.getElementById('alarmNames').innerHTML = names.join('<br>');
+  document.getElementById('alarmOverlay').classList.add('show');
+
+  playChime();
+  // 3秒おきに3回鳴らす
+  let count = 0;
+  const repeat = setInterval(function() {
+    count++;
+    if (count >= 3 || !document.getElementById('alarmOverlay').classList.contains('show')) {
+      clearInterval(repeat);
+      return;
+    }
+    playChime();
+  }, 3000);
+}
+
+function stopAlarm() {
+  document.getElementById('alarmOverlay').classList.remove('show');
+}
+</script>
+</body>
+</html>
