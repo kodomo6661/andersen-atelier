@@ -267,7 +267,10 @@ function renderList() {
       ' onclick="setStatus(' + i + ',\'' + label + '\')">' + label + '</button>'
     ).join('');
     const manualTag = a.manual ? '<span class="manual-tag">手動優先</span>' : '';
-    const closeLabel = a.close ? '<span class="close-time">〜' + a.close + manualTag + '</span>' : '';
+    const brk = (a.breakStart && a.breakEnd)
+      ? '　休憩 ' + a.breakStart + '-' + a.breakEnd : '';
+    const closeLabel = a.close
+      ? '<span class="close-time">〜' + a.close + brk + manualTag + '</span>' : '';
     row.innerHTML =
       '<div class="atelier-num">No.' + String(a.id).padStart(2,'0') + '</div>' +
       '<div class="atelier-name">' + a.name + closeLabel + '</div>' +

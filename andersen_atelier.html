@@ -60,6 +60,7 @@
   .card-number { font-size: 10px; font-weight: 700; letter-spacing: .12em; color: #aab0c8; margin-bottom: 2px; }
   .card-name { font-size: 15px; font-weight: 900; margin-bottom: 14px; line-height: 1.3; }
   .status-badge { display: inline-flex; align-items: center; border-radius: 100px; padding: 5px 13px; font-size: 12px; font-weight: 700; }
+  .resume-note { display: block; font-size: 11px; color: #7a8299; font-weight: 700; margin-top: 7px; }
   .status-open { background: var(--green-light); color: #2e7d52; }
   .status-full { background: var(--red-light); color: #c0392b; }
   .status-prep { background: var(--yellow-light); color: #9a7a00; }
@@ -136,11 +137,17 @@ function renderGrid(ateliers) {
     const cls = CLS[a.status] || 'done';
     const card = document.createElement('div');
     card.className = 'card';
+    // 休憩による休止中なら再開時刻を出す
+    let resume = '';
+    if (a.status === '休止中' && a.breakEnd) {
+      resume = '<span class="resume-note">' + a.breakEnd + ' 受付再開</span>';
+    }
     card.innerHTML =
       '<div class="card-accent card-accent-' + cls + '"></div>' +
       '<div class="card-number">ATELIER ' + String(a.id).padStart(2,'0') + '</div>' +
       '<div class="card-name">' + a.name + '</div>' +
-      '<span class="status-badge status-' + cls + '">' + a.status + '</span>';
+      '<span class="status-badge status-' + cls + '">' + a.status + '</span>' +
+      resume;
     grid.appendChild(card);
   });
 }
